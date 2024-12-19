@@ -29,6 +29,7 @@ class TicTacToe:
             self.draw_move(row, col)
 
             if self.check_winner():
+                self.draw_winner_line()
                 messagebox.showinfo("Game Over", f"Player {self.current_player} wins!")
                 self.reset_game()
             elif self.is_draw():
@@ -46,6 +47,23 @@ class TicTacToe:
             self.canvas.create_line(x1, y2, x2, y1, width=4, fill="blue")
         else:
             self.canvas.create_oval(x1, y1, x2, y2, width=4, outline="red")
+
+    def draw_winner_line(self):
+        # Check rows and columns for a winner
+        for i in range(3):
+            if all(self.board[i][j] == self.current_player for j in range(3)):
+                self.canvas.create_line(10, i * 100 + 50, 290, i * 100 + 50, width=4, fill="green")
+                return
+            if all(self.board[j][i] == self.current_player for j in range(3)):
+                self.canvas.create_line(i * 100 + 50, 10, i * 100 + 50, 290, width=4, fill="green")
+                return
+
+        # Check diagonals for a winner
+        if all(self.board[i][i] == self.current_player for i in range(3)):
+            self.canvas.create_line(10, 10, 290, 290, width=4, fill="green")
+            return
+        if all(self.board[i][2 - i] == self.current_player for i in range(3)):
+            self.canvas.create_line(10, 290, 290, 10, width=4, fill="green")
 
     def check_winner(self):
         # Check rows and columns
