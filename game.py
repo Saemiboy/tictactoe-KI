@@ -9,23 +9,24 @@ class TicTacToe:
         self.current_player = "X"
         self.board = [[None for _ in range(3)] for _ in range(3)]
 
-        self.create_buttons()
+        self.create_board()
 
-    def create_buttons(self):
-        self.buttons = []
-        for row in range(3):
-            button_row = []
-            for col in range(3):
-                button = tk.Button(self.window, text="", font=("Arial", 24), height=2, width=5,
-                                   command=lambda r=row, c=col: self.on_button_click(r, c))
-                button.grid(row=row, column=col)
-                button_row.append(button)
-            self.buttons.append(button_row)
+    def create_board(self):
+        self.canvas = tk.Canvas(self.window, width=300, height=300, bg="white")
+        self.canvas.pack()
 
-    def on_button_click(self, row, col):
+        # Draw grid lines
+        for i in range(1, 3):
+            self.canvas.create_line(0, i * 100, 300, i * 100, width=2)
+            self.canvas.create_line(i * 100, 0, i * 100, 300, width=2)
+
+        self.canvas.bind("<Button-1>", self.on_canvas_click)
+
+    def on_canvas_click(self, event):
+        row, col = event.y // 100, event.x // 100
         if self.board[row][col] is None:
             self.board[row][col] = self.current_player
-            self.buttons[row][col].config(text=self.current_player, state=tk.DISABLED)
+            self.draw_move(row, col)
 
             if self.check_winner():
                 messagebox.showinfo("Game Over", f"Player {self.current_player} wins!")
@@ -35,6 +36,16 @@ class TicTacToe:
                 self.reset_game()
             else:
                 self.current_player = "O" if self.current_player == "X" else "X"
+
+    def draw_move(self, row, col):
+        x1, y1 = col * 100 + 20, row * 100 + 20
+        x2, y2 = (col + 1) * 100 - 20, (row + 1) * 100 - 20
+
+        if self.current_player == "X":
+            self.canvas.create_line(x1, y1, x2, y2, width=4, fill="blue")
+            self.canvas.create_line(x1, y2, x2, y1, width=4, fill="blue")
+        else:
+            self.canvas.create_oval(x1, y1, x2, y2, width=4, outline="red")
 
     def check_winner(self):
         # Check rows and columns
@@ -56,9 +67,12 @@ class TicTacToe:
     def reset_game(self):
         self.current_player = "X"
         self.board = [[None for _ in range(3)] for _ in range(3)]
-        for row in self.buttons:
-            for button in row:
-                button.config(text="", state=tk.NORMAL)
+        self.canvas.delete("all")
+
+        # Redraw grid lines
+        for i in range(1, 3):
+            self.canvas.create_line(0, i * 100, 300, i * 100, width=2)
+            self.canvas.create_line(i * 100, 0, i * 100, 300, width=2)
 
     def run(self):
         self.window.mainloop()
