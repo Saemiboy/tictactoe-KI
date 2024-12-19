@@ -20,6 +20,7 @@ class TicTacToe:
         self.timer_id = None
 
         self.create_board()
+        self.create_controls()
 
     def create_board(self):
         self.canvas = tk.Canvas(self.window, width=600, height=600, bg="white")
@@ -32,6 +33,16 @@ class TicTacToe:
 
         self.canvas.bind("<Button-1>", self.on_canvas_click)
         self.start_timer()
+
+    def create_controls(self):
+        controls_frame = tk.Frame(self.window)
+        controls_frame.pack()
+
+        reset_button = tk.Button(controls_frame, text="Restart Game", font=("Arial", 20), command=self.reset_game)
+        reset_button.pack(side=tk.LEFT, padx=10)
+
+        quit_button = tk.Button(controls_frame, text="Quit Game", font=("Arial", 20), command=self.window.destroy)
+        quit_button.pack(side=tk.RIGHT, padx=10)
 
     def start_timer(self):
         self.time_left = 2
