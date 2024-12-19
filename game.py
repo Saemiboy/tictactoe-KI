@@ -12,7 +12,7 @@ class TicTacToe:
         self.timer_label = tk.Label(self.window, text="Time left: 10", font=("Arial", 14))
         self.timer_label.pack()
 
-        self.time_left = 3
+        self.time_left = 2
         self.timer_running = False
         self.timer_id = None
 
@@ -31,7 +31,7 @@ class TicTacToe:
         self.start_timer()
 
     def start_timer(self):
-        self.time_left = 10
+        self.time_left = 2
         if self.timer_id is not None:
             self.window.after_cancel(self.timer_id)
         self.update_timer()
@@ -58,15 +58,22 @@ class TicTacToe:
             self.draw_move(row, col)
 
             if self.check_winner():
+                self.stop_timer()
                 self.draw_winner_line()
                 messagebox.showinfo("Game Over", f"Player {self.current_player} wins!")
                 self.reset_game()
             elif self.is_draw():
+                self.stop_timer()
                 messagebox.showinfo("Game Over", "It's a draw!")
                 self.reset_game()
             else:
                 self.current_player = "O" if self.current_player == "X" else "X"
                 self.start_timer()
+
+    def stop_timer(self):
+        if self.timer_id is not None:
+            self.window.after_cancel(self.timer_id)
+            self.timer_id = None
 
     def draw_move(self, row, col):
         x1, y1 = col * 100 + 20, row * 100 + 20
@@ -113,6 +120,7 @@ class TicTacToe:
         return all(self.board[row][col] is not None for row in range(3) for col in range(3))
 
     def reset_game(self):
+        self.stop_timer()
         self.current_player = "X"
         self.board = [[None for _ in range(3)] for _ in range(3)]
         self.canvas.delete("all")
