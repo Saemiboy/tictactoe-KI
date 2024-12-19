@@ -12,8 +12,9 @@ class TicTacToe:
         self.timer_label = tk.Label(self.window, text="Time left: 10", font=("Arial", 14))
         self.timer_label.pack()
 
-        self.time_left = 10
+        self.time_left = 3
         self.timer_running = False
+        self.timer_id = None
 
         self.create_board()
 
@@ -31,6 +32,8 @@ class TicTacToe:
 
     def start_timer(self):
         self.time_left = 10
+        if self.timer_id is not None:
+            self.window.after_cancel(self.timer_id)
         self.update_timer()
 
     def update_timer(self):
@@ -38,7 +41,7 @@ class TicTacToe:
             self.timer_running = True
             self.timer_label.config(text=f"Time left: {self.time_left}")
             self.time_left -= 1
-            self.window.after(1000, self.update_timer)
+            self.timer_id = self.window.after(1000, self.update_timer)
         else:
             self.timer_running = False
             messagebox.showinfo("Time Out", f"Player {self.current_player} ran out of time! Switching turns.")
