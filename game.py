@@ -92,10 +92,6 @@ class TicTacToe:
                 self.ai_move()
 
     def ai_move(self):
-        # Verzögerung einbauen, damit die KI nach einer kurzen Pause ihren Zug macht
-        self.window.after(1000, self.execute_ai_move)
-
-    def execute_ai_move(self):
         row, col = get_ai_move(self.board)
         self.board[row][col] = "O"
         self.draw_move(row, col)
