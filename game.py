@@ -9,6 +9,12 @@ class TicTacToe:
         self.current_player = "X"
         self.board = [[None for _ in range(3)] for _ in range(3)]
 
+        self.timer_label = tk.Label(self.window, text="Time left: 10", font=("Arial", 14))
+        self.timer_label.pack()
+
+        self.time_left = 10
+        self.timer_running = False
+
         self.create_board()
 
     def create_board(self):
@@ -21,8 +27,28 @@ class TicTacToe:
             self.canvas.create_line(i * 100, 0, i * 100, 300, width=2)
 
         self.canvas.bind("<Button-1>", self.on_canvas_click)
+        self.start_timer()
+
+    def start_timer(self):
+        self.time_left = 10
+        self.update_timer()
+
+    def update_timer(self):
+        if self.time_left > 0:
+            self.timer_running = True
+            self.timer_label.config(text=f"Time left: {self.time_left}")
+            self.time_left -= 1
+            self.window.after(1000, self.update_timer)
+        else:
+            self.timer_running = False
+            messagebox.showinfo("Time Out", f"Player {self.current_player} ran out of time! Switching turns.")
+            self.current_player = "O" if self.current_player == "X" else "X"
+            self.start_timer()
 
     def on_canvas_click(self, event):
+        if not self.timer_running:
+            return
+
         row, col = event.y // 100, event.x // 100
         if self.board[row][col] is None:
             self.board[row][col] = self.current_player
@@ -37,6 +63,7 @@ class TicTacToe:
                 self.reset_game()
             else:
                 self.current_player = "O" if self.current_player == "X" else "X"
+                self.start_timer()
 
     def draw_move(self, row, col):
         x1, y1 = col * 100 + 20, row * 100 + 20
@@ -91,6 +118,8 @@ class TicTacToe:
         for i in range(1, 3):
             self.canvas.create_line(0, i * 100, 300, i * 100, width=2)
             self.canvas.create_line(i * 100, 0, i * 100, 300, width=2)
+
+        self.start_timer()
 
     def run(self):
         self.window.mainloop()
