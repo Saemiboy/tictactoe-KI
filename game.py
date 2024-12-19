@@ -1,4 +1,5 @@
 import tkinter as tk
+from gameAI import get_ai_move
 
 class TicTacToe:
     def __init__(self):
@@ -64,10 +65,13 @@ class TicTacToe:
         self.info_label.config(text=f"Player {self.current_player} ran out of time! Switching turns.")
         self.current_player = "O" if self.current_player == "X" else "X"
         self.info_label.config(text=f"Player {self.current_player}'s Turn")
-        self.start_timer()
+        if self.current_player == "O":
+            self.ai_move()
+        else:
+            self.start_timer()
 
     def on_canvas_click(self, event):
-        if not self.timer_running:
+        if not self.timer_running or self.current_player != "X":
             return
 
         row, col = event.y // 200, event.x // 200
@@ -83,9 +87,26 @@ class TicTacToe:
                 self.stop_timer()
                 self.info_label.config(text="It's a draw!")
             else:
-                self.current_player = "O" if self.current_player == "X" else "X"
+                self.current_player = "O"
                 self.info_label.config(text=f"Player {self.current_player}'s Turn")
-                self.start_timer()
+                self.ai_move()
+
+    def ai_move(self):
+        row, col = get_ai_move(self.board)
+        self.board[row][col] = "O"
+        self.draw_move(row, col)
+
+        if self.check_winner():
+            self.stop_timer()
+            self.draw_winner_line()
+            self.info_label.config(text=f"Player {self.current_player} wins!")
+        elif self.is_draw():
+            self.stop_timer()
+            self.info_label.config(text="It's a draw!")
+        else:
+            self.current_player = "X"
+            self.info_label.config(text=f"Player {self.current_player}'s Turn")
+            self.start_timer()
 
     def stop_timer(self):
         if self.timer_id is not None:
